@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Button, TouchableOpacity, StyleSheet, StatusBar, Alert, Platform, Modal, TextInput, Vibration } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import * as BackgroundFetch from 'expo-background-fetch';
 import Svg, { Path } from 'react-native-svg'; // Para el ícono de Settings
 import { useIsFocused } from '@react-navigation/native';
-
+import { TimerContext } from './TimerContext';
 
 // Configuración de la tarea en segundo plano
 const BACKGROUND_TIMER_TASK = 'background-timer-task';
@@ -70,7 +70,7 @@ export default function PomodoroScreen() {
     return () => clearInterval(interval);
   }, [isRunning, currentSeconds]);
 
-
+  
     const startBackgroundTask = async () => {
         if (Platform.OS === 'android' || Platform.OS === 'ios') {
         await BackgroundFetch.registerTaskAsync(BACKGROUND_TIMER_TASK, {
@@ -122,7 +122,8 @@ export default function PomodoroScreen() {
       shouldSetBadge: false,
     }),
   });
-  
+
+  const { completePomodoro } = useContext(TimerContext); // Accedemos al método para completar un Pomodoro
 
   const handleCycleCompletion = () => {
     Vibration.vibrate();
@@ -139,6 +140,7 @@ export default function PomodoroScreen() {
     } else {
       if (currentSet === sets) {
         resetPomodoro();
+        completePomodoro();
         Alert.alert("Pomodoro completo!", "Has completado todos los sets.");
         setIsRunning(false); // Paramos tras completar el pomodoro.
       } else {

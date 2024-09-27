@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Button, TouchableOpacity, StyleSheet, StatusBar, Alert, Platform, Modal, TextInput, Vibration } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import * as BackgroundFetch from 'expo-background-fetch';
 import { useIsFocused } from '@react-navigation/native';
+import { TimerContext } from './TimerContext';
 
 // Configuración de la tarea en segundo plano
 const BACKGROUND_TIMER_TASK = 'background-timer-task';
@@ -108,11 +109,14 @@ export default function OnePercentTimerScreen() {
     }),
   });
   
+  const { completeOnePercentTimer } = useContext(TimerContext); // Accedemos al método para completar un temporizador de 1%
+
 
   const handleCycleCompletion = () => {
     Vibration.vibrate();
     setIsRunning(false);
     resetTimer();
+    completeOnePercentTimer();
     Alert.alert("Timer completed!", "Congrats on working for 1% of your day!");
   };
 
